@@ -3,7 +3,7 @@
 $referr = $_SERVER['HTTP_REFERER'];
 $sekarang = admin_url("upload.php?page=add-from-server");
 
-if ($referr === $sekarang) {
+if (strpos($referr, $sekarang) !== false) {
 require_once('dp-functions.php');
 
 $attachment = get_post( $attach_ID );

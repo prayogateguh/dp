@@ -10,7 +10,7 @@ class GoogleImageGrabber
 	
 	public static function grab($keyword, $options = [])
 	{
-		$url = "https://www.google.com/search?q=" . urlencode($keyword) . "&source=lnms&tbm=isch&tbs=ift:jpg";
+		$url = "https://www.google.com/search?q=" . urlencode($keyword) . "&source=lnms&tbm=isch&tbs=iar:w,ift:jpg,isz:lt,islt:xga&biw=1366&bih=641";
 
 		$ua = \Campo\UserAgent::random([
 		    'os_type' => ['Windows', 'OS X'],

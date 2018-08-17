@@ -197,7 +197,7 @@ class Devtey_Poster_Admin {
 		} else {
 			$add_server = "";
 		}
-		if ($referr != $devtey and $referr != $add_server) {
+		if ($referr != $devtey and strpos($referr, $add_server) !== false) {
 			return $array;
 		}
 
@@ -347,12 +347,12 @@ class Devtey_Poster_Admin {
 	function dp_download_scheduler() {
 		$uploadDir = wp_upload_dir()['basedir'];
 		$fh = fopen("$uploadDir/wallpapers.txt",'r');
+		$waktu = date("dmy-His"); // create folder
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
 			$lokasi = trim($wallpaperData[1]);
 			$headers = get_headers($lokasi, 1);
-
-			$waktu = date("dmy"); // create folder
+			
 			if (!file_exists("$uploadDir/$waktu/")) {
 				mkdir("$uploadDir/$waktu/", 0777, true);
 			}
@@ -363,9 +363,9 @@ class Devtey_Poster_Admin {
 				continue;
 			}
 		}
+		fclose($fh);
 		update_option('dp-download-status', '0');
 		echo '<meta http-equiv="refresh" content="0">'; // refresh browser setelah semua download selesai
-		fclose($fh);
 	}
 
 	/**
