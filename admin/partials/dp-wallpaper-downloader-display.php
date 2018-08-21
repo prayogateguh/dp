@@ -18,11 +18,11 @@
     <h2 class="devtey-title">Wallpaper Grabber</h2>
     <?php if (get_option('dp-download-status') == 1) { ?>
     <div class="devtey-label-title">Download status: <span class="dp-scheduler-status dp-aktif" style="padding:2px;">on</span></div>
+    <hr>
+    <p>Proses download sedang berlangsung, silakan tunggu sampai selesai. :) Waktu yang dibutuhkan untuk download, bergantung pada jumlah keyword dan jumlah wallpaper</p>
     <?php } else { ?>
     <div class="devtey-label-title">Download status: <span class="dp-scheduler-status dp-nonaktif" style="padding:2px;">off</span></div>
-    <?php } ?>
     <hr>
-
     <form method="post" class="dp-form">
         <label for="post-title" class="devtey-label-title">Keywords</label>
         <textarea name="dp-keywords" id="dp-keywords" placeholder="Masukkan keywords perbaris" class="devtey-form" rows="4" cols="50"><?php echo esc_attr( $_POST['dp-keywords']); ?></textarea>
@@ -33,4 +33,5 @@
             <input name="dp-downloader-status" type="submit" value="Download" class="button button-primary aktif">
         </div>
     </form>
+    <?php } ?>
 </div>
