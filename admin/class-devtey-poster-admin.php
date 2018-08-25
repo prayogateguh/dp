@@ -195,9 +195,9 @@ class Devtey_Poster_Admin {
 		if (get_option('dp-add-server') == 1) {
 			$add_server = admin_url("upload.php?page=add-from-server");
 		} else {
-			$add_server = "";
+			$add_server = false;
 		}
-		if ($referr != $devtey and strpos($referr, $add_server) !== false) {
+		if ($referr != $devtey || $add_server !== false) {
 			return $array;
 		}
 
