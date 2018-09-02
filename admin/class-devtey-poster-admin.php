@@ -357,7 +357,9 @@ class Devtey_Poster_Admin {
 				mkdir("$uploadDir/$waktu/", 0777, true);
 			}
 
-			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
+			if (get_option('dp-download-status') == '0') {
+				break;
+			} else if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
 				exec("nohup wget --timeout=30 --tries=1 $lokasi -A.jpg -O $uploadDir/$waktu/$wallpaperData[0]");
 			} else {
 				continue;
@@ -377,7 +379,9 @@ class Devtey_Poster_Admin {
 		}
 	}
 	function end_session() {
-		session_destroy();
+		if(session_status() == PHP_SESSION_ACTIVE) {
+			session_destroy();
+		}
 	}
 
 	public function display_poster_page() {

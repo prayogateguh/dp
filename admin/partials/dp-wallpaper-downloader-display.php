@@ -20,6 +20,12 @@
     <div class="devtey-label-title">Download status: <span class="dp-scheduler-status dp-aktif" style="padding:2px;">on</span></div>
     <hr>
     <p>Proses download sedang berlangsung, silakan tunggu sampai selesai. :) Waktu yang dibutuhkan untuk download, bergantung pada jumlah keyword dan jumlah wallpaper</p>
+    <form method="post" class="dp-form">
+        <div class="submit">
+            <input type="hidden" name="dp-download-status" value="0">
+            <input name="dp-downloader-status" type="submit" value="Batalkan Download" class="button non-aktif">
+        </div>
+    </form>
     <?php } else { ?>
     <div class="devtey-label-title">Download status: <span class="dp-scheduler-status dp-nonaktif" style="padding:2px;">off</span></div>
     <hr>
@@ -30,6 +36,7 @@
         <input name="dp-download-perkeyword" id="dp-download-perkeyword" placeholder="Masukkan berapa jumlah wallpaper yang ingin didownload per-keywordnya." class="devtey-form" value="<?php echo esc_attr( $_POST['dp-download-perkeyword']); ?>" />
         <p>Wallpaper akan tersimpan di <span style="font-weight: bold;"><?php echo wp_upload_dir()['basedir']; ?>/DDMMYY/</span>. Proses download akan selesai ketika <strong><em>Download status</em></strong> menjadi <span class="dp-scheduler-status dp-nonaktif" style="padding:2px;">off</span>.</p>
         <div class="submit">
+            <input type="hidden" name="dp-download-status" value="1">
             <input name="dp-downloader-status" type="submit" value="Download" class="button button-primary aktif">
         </div>
     </form>
