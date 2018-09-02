@@ -108,6 +108,7 @@ class Devtey_Poster_Admin {
 		register_setting( 'dp-download-settings', 'dp-download-status' );
 		register_setting( 'dp-download-settings', 'dp-download-keywords' );
 		register_setting( 'dp-download-settings', 'dp-download-total' );
+		register_setting( 'dp-download-settings', 'dp-download-dir' );
 	}
 	public function dp_scheduler_settings() {
 		// post scheduler options
@@ -348,14 +349,14 @@ class Devtey_Poster_Admin {
 		$uploadDir = wp_upload_dir()['basedir'];
 		$fh = fopen("$uploadDir/wallpapers.txt",'r');
 		$waktu = date("dmy-His"); // create folder
+		update_option('dp-download-dir', "$waktu");
+		if (!file_exists("$uploadDir/$waktu/")) {
+			mkdir("$uploadDir/$waktu/", 0777, true);
+		}
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
 			$lokasi = trim($wallpaperData[1]);
 			$headers = get_headers($lokasi, 1);
-			
-			if (!file_exists("$uploadDir/$waktu/")) {
-				mkdir("$uploadDir/$waktu/", 0777, true);
-			}
 
 			if (get_option('dp-download-status') == '0') {
 				break;

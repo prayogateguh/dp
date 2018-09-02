@@ -14,8 +14,13 @@ if (isset($_POST['dp-downloader-status'])) {
         update_option('dp-download-keywords', '');
         update_option('dp-download-total', '');
         echo '<meta http-equiv="refresh" content="0">'; // refresh browser
-        // remove wallpapers.txt
+        // remove wallpapers.txt & current canceled wallpaper directory
         $uploadDir = wp_upload_dir()['basedir'];
-        unlink("$uploadDir/wallpapers.txt");
+        @unlink("$uploadDir/wallpapers.txt");
+        $wallDir = get_option('dp-download-dir');
+        if (file_exists("$uploadDir/$wallDir/")) {
+            array_map('unlink', glob("$uploadDir/$wallDir/*.*"));
+			rmdir("$uploadDir/$wallDir/");
+		}
     }
 }
