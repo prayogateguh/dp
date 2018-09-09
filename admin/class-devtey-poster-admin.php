@@ -322,6 +322,7 @@ class Devtey_Poster_Admin {
 				// echo "$idx - ";
 				$namafile = $image['title'];
 				$filetype = $image['filetype'];
+				if ($image['filetype'] == '') { $filetype = 'jpg'; };
 				$lokasi = $image['url'];
 				// $idx ++;
 
@@ -337,9 +338,11 @@ class Devtey_Poster_Admin {
 		}
 		fclose($myfile); // tutup file penampung data wallpaper
 
-		if (! wp_next_scheduled ( 'dp_download_schedule' )) { // do the download process using wp cron
-			wp_schedule_single_event( time(), 'dp_download_schedule' );
-		}
+		if (! wp_next_scheduled ( 'dp_download_keywords' ) && ! wp_next_scheduled ( 'dp_download_schedule' )) { // do the download process using wp cron
+			wp_schedule_single_event( time() + 10, 'dp_download_schedule' );
+		} else {
+            wp_clear_scheduled_hook( 'dp_download_schedule' );
+        }
 	}
 
 	/**
@@ -348,27 +351,33 @@ class Devtey_Poster_Admin {
 	function dp_download_scheduler() {
 		$uploadDir = wp_upload_dir()['basedir'];
 		$fh = fopen("$uploadDir/wallpapers.txt",'r');
-		$waktu = date("dmy-His"); // create folder
-		update_option('dp-download-dir', "$waktu");
-		if (!file_exists("$uploadDir/$waktu/")) {
-			mkdir("$uploadDir/$waktu/", 0777, true);
+		
+		$namaFolder = get_option('dp-download-dir');
+		if (!file_exists("$uploadDir/$namaFolder/")) {
+			mkdir("$uploadDir/$namaFolder/", 0777, true);
 		}
+
+		$no_of_lines = get_option('dp-download-total');
+		$idx = 1;
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
 			$lokasi = trim($wallpaperData[1]);
 			$headers = get_headers($lokasi, 1);
 
-			if (get_option('dp-download-status') == '0') {
+			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
+				exec("nohup wget --timeout=30 --tries=1 $lokasi -A.jpg -O $uploadDir/$namaFolder/$wallpaperData[0]");
+			} else if ($no_of_lines <= $idx) {
 				break;
-			} else if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
-				exec("nohup wget --timeout=30 --tries=1 $lokasi -A.jpg -O $uploadDir/$waktu/$wallpaperData[0]");
 			} else {
 				continue;
 			}
+			$idx++;
 		}
 		fclose($fh);
 		update_option('dp-download-status', '0');
 		echo '<meta http-equiv="refresh" content="0">'; // refresh browser setelah semua download selesai
+		// update_option('dp-download-status', '0');
+		// echo '<meta http-equiv="refresh" content="0">'; // refresh browser setelah semua download selesai
 	}
 
 	/**
