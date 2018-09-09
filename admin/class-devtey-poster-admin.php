@@ -357,27 +357,21 @@ class Devtey_Poster_Admin {
 			mkdir("$uploadDir/$namaFolder/", 0777, true);
 		}
 
-		$no_of_lines = get_option('dp-download-total');
-		$idx = 1;
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
 			$lokasi = trim($wallpaperData[1]);
 			$headers = get_headers($lokasi, 1);
 
 			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
-				exec("nohup wget --timeout=30 --tries=1 $lokasi -A.jpg -O $uploadDir/$namaFolder/$wallpaperData[0]");
-			} else if ($no_of_lines <= $idx) {
-				break;
+				//exec("nohup wget $lokasi -O $uploadDir/$namaFolder/$wallpaperData[0]");
+				file_put_contents("$uploadDir/$namaFolder/$wallpaperData[0]",file_get_contents($lokasi));
 			} else {
 				continue;
 			}
-			$idx++;
 		}
 		fclose($fh);
 		update_option('dp-download-status', '0');
 		echo '<meta http-equiv="refresh" content="0">'; // refresh browser setelah semua download selesai
-		// update_option('dp-download-status', '0');
-		// echo '<meta http-equiv="refresh" content="0">'; // refresh browser setelah semua download selesai
 	}
 
 	/**
