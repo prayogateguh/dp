@@ -90,18 +90,20 @@ class Devtey_Poster_Admin {
 	 *
 	 * @since     1.0.0
 	 */
+	public function dp_general_settings() {
+		// post creator options
+		register_setting( 'dp-general-settings', 'dp-auto-tag' );
+		register_setting( 'dp-general-settings', 'dp-hapus-exif' );
+		register_setting( 'dp-general-settings', 'dp-cap-judul' );
+		register_setting( 'dp-general-settings', 'dp-featured-image' );
+		register_setting( 'dp-general-settings', 'dp-auto-desc' );
+		register_setting( 'dp-general-settings', 'dp-desc-text' );
+	}
 	public function dp_poster_settings() {
 		// post creator options
-		register_setting( 'dp-poster-settings', 'dp-kategori' );
-		register_setting( 'dp-poster-settings', 'dp-post-title' );
-		register_setting( 'dp-poster-settings', 'dp-multi-wallpapers' );
-		register_setting( 'dp-poster-settings', 'dp-auto-tag' );
-		register_setting( 'dp-poster-settings', 'dp-hapus-exif' );
-		register_setting( 'dp-poster-settings', 'dp-cap-judul' );
-		register_setting( 'dp-poster-settings', 'dp-featured-image' );
-		register_setting( 'dp-poster-settings', 'dp-add-server' );
-		register_setting( 'dp-poster-settings', 'dp-auto-desc' );
-		register_setting( 'dp-poster-settings', 'dp-desc-text' );
+		register_setting( 'dp-poster-settings', 'dp-kategori-m' );
+		register_setting( 'dp-poster-settings', 'dp-post-title-m' );
+		register_setting( 'dp-poster-settings', 'dp-multi-wallpapers-m' );
 	}
 	public function dp_downloader() {
 		// downloader status variable
@@ -109,6 +111,14 @@ class Devtey_Poster_Admin {
 		register_setting( 'dp-download-settings', 'dp-download-keywords' );
 		register_setting( 'dp-download-settings', 'dp-download-total' );
 		register_setting( 'dp-download-settings', 'dp-download-dir' );
+		register_setting( 'dp-download-settings', 'dp-post-title-g' );
+		register_setting( 'dp-download-settings', 'dp-kategori-g' );
+		register_setting( 'dp-download-settings', 'dp-multi-wallpapers-g' );
+		register_setting( 'dp-download-settings', 'se-google-ukuran' );
+		register_setting( 'dp-download-settings', 'se-google-rasio' );
+		register_setting( 'dp-download-settings', 'se-google-waktu' );
+		register_setting( 'dp-download-settings', 'se-google-warna' );
+		register_setting( 'dp-download-settings', 'se-google-url' );
 	}
 	public function dp_scheduler_settings() {
 		// post scheduler options
@@ -175,7 +185,7 @@ class Devtey_Poster_Admin {
 	 * Image uploader actions
 	 */
 	function post_creator( $attach_ID ) {
-		if (get_option('dp-multi-wallpapers') == 1) {
+		if (get_option('dp-multi-wallpapers-m') == 1) {
 			include_once 'include/dp-image-multi.php';
 		} else {
 			include_once 'include/dp-image-single.php';
@@ -198,7 +208,8 @@ class Devtey_Poster_Admin {
 		} else {
 			$add_server = false;
 		}
-		if ($referr != $devtey || $add_server !== false) {
+		$grabber = (get_option('dp-download-status') === 1) ? true : false;
+		if ($referr != $devtey || $add_server !== false || $grabber !== true) {
 			return $array;
 		}
 
@@ -314,26 +325,34 @@ class Devtey_Poster_Admin {
 
 		$myfile = fopen("$uploadDir/wallpapers.txt", "w") or die("Unable to open file!"); // buat file text untuk nampung data wallpaper
 		foreach ($dpKeywords as $keyword) {
-			$images = $gid->grab($keyword);
+			$images = $gid->grab(strip_tags($keyword));
 
 			//var_dump($images);
-
+			$idx = 1;
 			foreach ($images as $image) {
 				// echo "$idx - ";
 				$namafile = $image['title'];
 				$filetype = $image['filetype'];
-				if ($image['filetype'] == '') { $filetype = 'jpg'; };
+				if ($image['filetype'] == '') { $image['filetype'] = 'jpg'; };
 				$lokasi = $image['url'];
 				// $idx ++;
 
-				// rename it
-				$namafile = preg_replace("/[^ \w]+/", "", $namafile);
-				$namafile = str_replace(" ", "_", $namafile);
+				// formating
+				if (get_option('dp-multi-wallpapers-g') == 1 || get_option('dp-keyword-as-title') == 1) {
+					$namafile = preg_replace('/[^\w]/', '_', strip_tags($keyword));
+					$namafile = $namafile . "_$idx";
+					$namafile = str_replace("__", "_", $namafile);
+				} else {
+					$namafile = preg_replace("/[^ \w]+/", "", $namafile);
+					$namafile = str_replace(" ", "_", $namafile);
+				}
+
 				$namafile = strtolower($namafile);
 
 				// save the wallpapers data
 				$txt = "$namafile.$filetype>$lokasi\n";
 				fwrite($myfile, $txt);
+				$idx++;
 			}
 		}
 		fclose($myfile); // tutup file penampung data wallpaper
@@ -359,12 +378,19 @@ class Devtey_Poster_Admin {
 
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
-			$lokasi = trim($wallpaperData[1]);
+			$lokasi = trim($wallpaperData[1]); // alamat file eq. https://xyz.com/naruto.jpg
+			$nama_file = trim($wallpaperData[0]); // nama file eq. naruto.jpg
 			$headers = get_headers($lokasi, 1);
 
-			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0") { // hanya download gambar yang bagus
+			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0" && strpos($nama_file, '.jpg') !== false) { // hanya download gambar yang bagus
 				//exec("nohup wget $lokasi -O $uploadDir/$namaFolder/$wallpaperData[0]");
 				file_put_contents("$uploadDir/$namaFolder/$wallpaperData[0]",file_get_contents($lokasi));
+				$image_url = "$wp_upload_dir/$namaFolder/$wallpaperData[0]";
+				if (get_option('dp-multi-wallpapers-g') == 1) { // jika multi wallpaper diaktifkan, tapi fitur setting keyword as title juga harus diaktifkan.
+					include 'include/dp-grabber-postcreatormulti.php';
+				} else {
+					include 'include/dp-grabber-postcreator.php';
+				}
 			} else {
 				continue;
 			}
@@ -389,7 +415,7 @@ class Devtey_Poster_Admin {
 	}
 
 	public function display_poster_page() {
-		add_submenu_page('devtey-poster', 'Post Settings', 'Post Settings', 'manage_options', 'devtey-poster' );
+		add_submenu_page('devtey-poster', 'General Settings', 'General Settings', 'manage_options', 'devtey-poster' );
 		add_submenu_page('devtey-poster', 'Wallpaper Uploader', 'Wallpaper Uploader', 'manage_options', 'dp-post-creator', array($this, 'dp_post_creator') );
 		add_submenu_page('devtey-poster', 'Wallpaper Grabber', 'Wallpaper Grabber', 'manage_options', 'dp-wallpaper-downloader', array($this, 'dp_wallpaper_downloader') );		
 		add_submenu_page('devtey-poster', 'Post Scheduler', 'Post Scheduler', 'manage_options', 'dp-post-scheduler', array($this, 'dp_post_scheduler') );

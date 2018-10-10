@@ -15,41 +15,14 @@
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="dp-container">
-    <h2 class="devtey-title">Devtey Poster <span class="devtey-version">v1.0.0</span></h2>
+    <h2 class="devtey-title">Devtey Poster <span class="devtey-version">v1.0.2</span></h2>
     <hr>
     <?php
     if (get_option('dp_poster') == 1) { ?>
         <!-- This file should primarily consist of HTML with a little bit of PHP. -->
         <form method="post" action="options.php">
-            <?php settings_fields( 'dp-poster-settings' ); ?>
-            <?php do_settings_sections( 'dp-poster-settings' ); ?>
-            <label for="kategori" class="devtey-label-title">Pilih Kategori</label>
-            <select id="kategori" name="dp-kategori" class="devtey-form">
-            <?php
-                $args = array('hide_empty' => false);
-                $categories = get_categories( $args );
-                $stored_category_id = esc_attr( get_option('dp-kategori') );
-                foreach ( $categories as $category ) { 
-                    $selected = ( $stored_category_id ==  $category->term_id  ) ? 'selected' : ''; ?>
-                    <option name="kategories[option_one]" value="<?php echo $category->term_id ?>" <?php echo $selected ?>><?php echo $category->name ?></option>
-                    <?php
-                }
-            ?>
-            </select>
-
-            <label for="post-title" class="devtey-label-title">Format Judul</label>
-            <input name="dp-post-title" type="text" id="post-title" placeholder="Contoh: Wallpaper {file_name} Free Download" class="devtey-form" value="<?php echo esc_attr( get_option('dp-post-title') ); ?>">
-
-            <div class="devtey-toggle">
-                <label class="switch">
-                    <input type="checkbox" name="dp-multi-wallpapers" value="1" <?php checked( get_option('dp-multi-wallpapers') ); ?>>
-                    <span class="slider"></span>
-                </label>
-                <label class="desc">
-                    <span class="title devtey-label-title">Banyak Wallpaper dalam satu post?</span>
-                    <span class="desc">(Jika diaktifkan, satu posting akan berisikan banyak wallpaper/gallery.)</span>
-                </label>
-            </div>
+            <?php settings_fields( 'dp-general-settings' ); ?>
+            <?php do_settings_sections( 'dp-general-settings' ); ?>
 
             <div class="devtey-toggle">
                 <label class="switch">
@@ -98,17 +71,6 @@
 
             <div class="devtey-toggle">
                 <label class="switch">
-                    <input type="checkbox" name="dp-add-server" value="1" <?php checked( get_option('dp-add-server') ); ?>>
-                    <span class="slider"></span>
-                </label>
-                <label class="desc">
-                    <span class="title devtey-label-title">Add From Server</span>
-                    <span class="desc">(Punya gambar di server? Silakan aktifkan fitur ini dan gunakan Plugin tambahan: <strong>Add From Server</strong>.)</span>
-                </label>
-            </div>
-
-            <div class="devtey-toggle">
-                <label class="switch">
                     <input id="dp-toggle-desc" type="checkbox" name="dp-auto-desc" onclick="show_desc()" value="1" <?php checked( get_option('dp-auto-desc') ); ?>>
                     <span class="slider"></span>
                 </label>
@@ -136,26 +98,30 @@
                     
                 </div>
                 <script>
-                    function show_desc() {
-                        // Get the checkbox
-                        var checkBox = document.getElementById("dp-toggle-desc");
-                        var show_info = document.getElementById("show-info");
-                        // Get the output text
-                        var text = document.getElementById("desc-text");
-                        var info_box = document.getElementById("desc-info");
+                    // Get the checkbox
+                    var checkBox = document.getElementById("dp-toggle-desc");
+                    var show_info = document.getElementById("show-info");
+                    // Get the output text
+                    var text = document.getElementById("desc-text");
+                    var info_box = document.getElementById("desc-info");
 
-                        // If the checkbox is checked, display the output text
-                        if (checkBox.checked) {
-                            text.style.display = "block";
-                        } else {
+                    checkBox.addEventListener("click", function onclick(event) { // saat pertama kali multi wall diklik, aktifkan key as title juga
+                        text.style.display = "block";
+                    });
+                    checkBox.addEventListener("click", function onclick(event) { // matikan disable klik pada key as title jika multiwall tidak aktif.
+                        if (checkBox.checked == false){
                             text.style.display = "none";
-                        }
+                        }			
+                    });                        
 
-                        // info_box.style.display = "none";
-                        if (show_info.click) {
-                            info_box.style.display = (info_box.dataset.toggled ^= 1) ? "block" : "none";
-                        }
-                    }
+                    show_info.addEventListener("click", function onclick(event) { // saat pertama kali multi wall diklik, aktifkan key as title juga
+                        info_box.style.display = "block";
+                    });
+                    show_info.addEventListener("click", function onclick(event) { // matikan disable klik pada key as title jika multiwall tidak aktif.
+                        if (show_info.checked == false){
+                            info_box.style.display = "none";
+                        }			
+                    });
                 </script>
             </div>
 

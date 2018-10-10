@@ -16,7 +16,7 @@
  * Plugin Name:       Devtey Poster
  * Plugin URI:        https://devtey.com/plugins/poster
  * Description:       Plugin wallpaper (rasa manual) terbaik, anti ribet.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Devtey Inc.
  * Author URI:        https://devtey.com/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'DP_POSTER_VER', '1.0.1' );
+define( 'DP_POSTER_VER', '1.0.2' );
 define( 'DP_SK', '5b35daba863653.21864685' );
 define( 'DP_SU', 'https://devtey.com' );
 define( 'DP_IR', 'Devtey Poster' );

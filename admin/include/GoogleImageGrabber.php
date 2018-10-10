@@ -10,7 +10,12 @@ class GoogleImageGrabber
 	
 	public static function grab($keyword, $options = [])
 	{
-		$url = "https://www.google.com/search?q=" . urlencode($keyword) . "&source=lnms&tbm=isch&tbs=iar:w,ift:jpg,isz:lt,islt:xga&biw=1366&bih=641";
+		$ukuran = get_option('se-google-ukuran') . ',';
+		$rasio = get_option('se-google-rasio') . ',';
+		$waktu = get_option('se-google-waktu') . ',';
+		$warna = get_option('se-google-warna');
+		$url = "https://www.google.com/search?q=" . urlencode($keyword) . "&tbm=isch&tbs={$ukuran}{$rasio}{$waktu}{$warna},ift:jpg";
+		update_option('se-google-url', $url);
 
 		$ua = \Campo\UserAgent::random([
 		    'os_type' => ['Windows', 'OS X'],

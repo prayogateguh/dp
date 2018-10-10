@@ -27,7 +27,8 @@ function desc_format($content, $post, $attch) {
     $_post_attch_page = $attch->post_name;
     $_post_attch_url = $attch->guid;
     $_post_attch_res = "{$attch_img[0]}x{$attch_img[1]}";
-    $_post_attch_size = size_format(filesize( get_attached_file( $attch->ID ) ));
+    $_post_attch_size = get_headers($attch->guid, 1);
+    $_post_attch_size = size_format($_post_attch_size["Content-Length"]);
     $_single_wallpaper = "<img src='{$_post_attch_url}' alt='{$_post_title}' />";
     $_multi_wallpaper = do_shortcode("[dpgallery id={$post->ID}]");
 

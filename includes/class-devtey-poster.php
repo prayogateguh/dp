@@ -162,7 +162,9 @@ class Devtey_Poster {
 		if (get_option('dp_poster') == 1) {
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'display_poster_page' );
 		}
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'dp_poster_settings' ); // register dp-poster setting options
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'dp_general_settings' ); // register dp-poster general setting
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'dp_poster_settings' ); // manual setting
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'dp_downloader' ); // grabber setting
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dp_scheduler_settings' ); // register dp-scheduler setting options
 		if (get_option('dp-add-server') == 1) {
 			$this->loader->add_action( 'add_attachment', $plugin_admin, 'server_creator'); // create post from server upload
