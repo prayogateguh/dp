@@ -333,7 +333,7 @@ class Devtey_Poster_Admin {
 				// echo "$idx - ";
 				$namafile = $image['title'];
 				$filetype = $image['filetype'];
-				if ($image['filetype'] == '') { $image['filetype'] = 'jpg'; };
+				if ($image['filetype'] == '') { continue; };
 				$lokasi = $image['url'];
 				// $idx ++;
 
@@ -371,20 +371,26 @@ class Devtey_Poster_Admin {
 		$uploadDir = wp_upload_dir()['basedir'];
 		$fh = fopen("$uploadDir/wallpapers.txt",'r');
 		
+		$uploadDir = wp_upload_dir()['path'];
 		$namaFolder = get_option('dp-download-dir');
 		if (!file_exists("$uploadDir/$namaFolder/")) {
 			mkdir("$uploadDir/$namaFolder/", 0777, true);
 		}
-
+		
 		while ($line = fgets($fh)) {
 			$wallpaperData = explode(">", $line);
 			$lokasi = trim($wallpaperData[1]); // alamat file eq. https://xyz.com/naruto.jpg
+			$lokasi = strtok($lokasi, '?'); // hapus url setelah tanda ?
 			$nama_file = trim($wallpaperData[0]); // nama file eq. naruto.jpg
 			$headers = get_headers($lokasi, 1);
 
-			if ($headers[0] == 'HTTP/1.1 200 OK' && $headers["Content-Length"] != "0" && strpos($nama_file, '.jpg') !== false) { // hanya download gambar yang bagus
-				//exec("nohup wget $lokasi -O $uploadDir/$namaFolder/$wallpaperData[0]");
-				file_put_contents("$uploadDir/$namaFolder/$wallpaperData[0]",file_get_contents($lokasi));
+			if ($headers[0] != 'HTTP/1.1 200 OK') {
+				continue;
+			}
+
+			if ($headers["Content-Length"] != "0" && strpos($nama_file, '.jpg') != false) { // hanya download gambar yang bagus
+				exec("nohup wget $lokasi -T 10 -O $uploadDir/$namaFolder/$wallpaperData[0]");
+				// file_put_contents("$uploadDir/$namaFolder/$wallpaperData[0]",file_get_contents($lokasi));
 				$image_url = "$wp_upload_dir/$namaFolder/$wallpaperData[0]";
 				if (get_option('dp-multi-wallpapers-g') == 1) { // jika multi wallpaper diaktifkan, tapi fitur setting keyword as title juga harus diaktifkan.
 					include 'include/dp-grabber-postcreatormulti.php';
