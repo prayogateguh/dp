@@ -23,7 +23,7 @@
     <form method="post" class="dp-form">
         <div class="submit">
             <input type="hidden" name="dp-download-status" value="0">
-            <input name="dp-downloader-status" type="submit" value="Batalkan Download" class="button non-aktif">
+            <input name="dp-downloader-status" type="submit" value="Stop Download" class="button non-aktif">
         </div>
     </form>
     <?php } else { ?>

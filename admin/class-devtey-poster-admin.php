@@ -388,8 +388,21 @@ class Devtey_Poster_Admin {
 				continue;
 			}
 
+			if (get_option('dp-download-status') === 0) {
+				break;
+			}
+			
 			if ($headers["Content-Length"] != "0" && strpos($nama_file, '.jpg') != false) { // hanya download gambar yang bagus
 				exec("nohup wget $lokasi -T 10 -O $uploadDir/$namaFolder/$wallpaperData[0]");
+				
+				// remove exif
+				if (get_option('dp-hapus-exif') == 1) {
+					$pathJpg = "$uploadDir/$namaFolder/$wallpaperData[0]"; // original path
+					$img = imagecreatefromjpeg ($pathJpg); // create a copy
+					imagejpeg ($img, $pathJpg, 80); // remove the exif
+					imagedestroy ($img); // destroy the copy
+				}
+
 				// file_put_contents("$uploadDir/$namaFolder/$wallpaperData[0]",file_get_contents($lokasi));
 				$image_url = "$wp_upload_dir/$namaFolder/$wallpaperData[0]";
 				if (get_option('dp-multi-wallpapers-g') == 1) { // jika multi wallpaper diaktifkan, tapi fitur setting keyword as title juga harus diaktifkan.

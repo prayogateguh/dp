@@ -29,10 +29,13 @@ if (isset($_POST['dp-downloader-status'])) {
         if (file_exists("$uploadDir/wallpapers.txt")) {
             unlink("$uploadDir/wallpapers.txt");
         }
-        $wallDir = get_option('dp-download-dir');
-        if (file_exists("$uploadDir/$wallDir/")) {
-            array_map('unlink', glob("$uploadDir/$wallDir/*.*"));
-			rmdir("$uploadDir/$wallDir/");
-		}
+        // $wallDir = get_option('dp-download-dir');
+        // if (file_exists("$uploadDir/$wallDir/")) {
+        //     array_map('unlink', glob("$uploadDir/$wallDir/*.*"));
+		// 	rmdir("$uploadDir/$wallDir/");
+        // }
+        if (wp_next_scheduled ( 'dp_download_schedule' )) { // do the download process using wp cron
+            wp_clear_scheduled_hook( 'dp_download_schedule' );
+        }
     }
 }

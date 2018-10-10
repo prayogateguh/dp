@@ -15,7 +15,7 @@
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="dp-container">
-    <h2 class="devtey-title">Devtey Poster <span class="devtey-version">v1.0.2</span></h2>
+    <h2 class="devtey-title">Devtey Poster <span class="devtey-version">v1.0.3</span></h2>
     <hr>
     <?php
     if (get_option('dp_poster') == 1) { ?>
